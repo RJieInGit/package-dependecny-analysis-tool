@@ -1,0 +1,452 @@
+<DOCTYPE !HTML>
+<html>
+  <head>
+    <Title>Converter.cpp</Title>
+    <style>
+      body {
+        padding:15px 40px;
+        font-family: Consolas;
+        font-size: 1.25em;
+        font-weight: normal;
+      }
+      </style>
+  </head>
+
+  <body>
+<button onclick = "toggle('comment')"> hide / show PreComments </button>
+<button onclick = "toggle('isFunction')"> hide / show functions </button>
+<button onclick = "toggle('isClass')"> hide / show class </button>
+    <h3>Dependencies: 
+      <a href="Converter.h.html">Converter.h</a>
+ <span>Logger.h</span>
+ <span>FileSystem.h</span>
+ <span>dependency.h</span>
+ <span>DependencyTable.h</span>
+ <span> vector </span>
+ <span>loader.h</span>
+    </h3>    <pre>
+<div class="comment"> ///////////////////////////////////////////////////////////////////////////</div>
+<div class="comment"> // Converter.cpp : implements and provides test stub for Converter.h     //</div>
+<div class="comment"> // ver 1.0                                                               //</div>
+<div class="comment"> //                                                                       // </div>
+<div class="comment"> // Application   : OOD-S19 Instructor Solution                           //</div>
+<div class="comment"> // Platform      : Visual Studio Community 2017, Windows 10 Pro x64      //</div>
+<div class="comment"> // Author        : Ammar Salman, Syracuse University                     //</div>
+<div class="comment"> //                 313/788-4694, assalman@syr.edu         </div>
+<div class="comment"> //                 Jie Ren,     Syracuse University</div>
+<div class="comment"> //                 315/289-0047  jren21@syr.edu</div>
+<div class="comment"> ///////////////////////////////////////////////////////////////////////////</div>
+
+#include "Converter.h"
+#include "../Logger/Logger.h"
+#include "../FileSystem/FileSystem.h"
+#include "../Dependency/dependency.h"
+#include "../DependencyTable/DependencyTable.h"
+#include &ltvector&gt
+#include"../loader/loader.h"
+using namespace FileSystem;
+using namespace Logging;
+using namespace std;
+using namespace CodeAnalysis;
+<div class="comment"> // -----&lt default ctor &gt--------------------------------------------------</div>
+CodeConverter::CodeConverter()
+<div class="isFunction">{
+}</div>
+
+<div class="comment"> // -----&lt ctor to set dep table &gt-----------------------------------------</div>
+CodeConverter::CodeConverter(const DependencyTable & dt) : dt_(dt)
+<div class="isFunction">{
+  //LoggerDebug::write("\n  CodeConverter initialized with DependencyTable\n");
+}</div>
+
+<div class="comment"> // -----&lt set dependency table function &gt---------------------------------</div>
+void CodeConverter::setDepTable(const DependencyTable & dt)
+<div class="isFunction">{
+  dt_ = dt;
+}</div>
+
+<div class="comment"> // -----&lt convert pre-set dependency table &gt------------------------------</div>
+std::vector&ltstd::string&gt CodeConverter::convert()
+<div class="isFunction">{
+  if (!createOutpurDir()) {
+   //LoggerDebug::write("\n\n  Failed to start conversion due to inability to create output directory");
+   // LoggerDebug::write("\n  -- Output Directory: " + Path::getFullFileSpec(outputDir_));
+    return std::vector&ltstd::string&gt();
+  }
+
+  //LoggerDemo::write("\n\n  Converting files to webpages");
+  //LoggerDebug::write("\n\n  Converting files to webpages");
+
+  //LoggerDebug::write("\n  Output directory: " + Path::getFullFileSpec(outputDir_));
+  //LoggerDemo::write("\n  Output directory: " + Path::getFullFileSpec(outputDir_));
+
+  for (auto entry : dt_) {
+    if (convertFile(entry.first)) {
+      //LoggerDemo::write("\n  -- Converted: ");
+     // LoggerDebug::write("\n  -- Converted: ");
+    }
+    else {
+      //LoggerDemo::write("\n  -- Failed:    ");
+      //LoggerDebug::write("\n  -- Failed:    ");
+    }
+
+    std::string filename = Path::getName(entry.first);
+   // LoggerDebug::write(filename);
+   // LoggerDemo::write(filename);
+  }
+ // LoggerDebug::write("\n");
+  //LoggerDemo::write("\n");
+  return convertedFiles_;
+}</div>
+
+<div class="comment"> // -----&lt convert single file given path &gt----------------------------------</div>
+std::string CodeConverter::convert(const std::string & filepath)
+<div class="isFunction">{
+  if (!createOutpurDir()) {
+    //LoggerDebug::write("\n\n  Failed to start conversion due to inability to create output directory");
+    //LoggerDebug::write("\n  -- Output Directory: " + Path::getFullFileSpec(outputDir_));
+    return "";
+  }
+
+  //LoggerDemo::write("\n\n  Converting files to webpages");
+  //LoggerDebug::write("\n\n  Converting files to webpages");
+
+  //LoggerDebug::write("\n  Output directory: " + Path::getFullFileSpec(outputDir_));
+  //LoggerDemo::write("\n  Output directory: " + Path::getFullFileSpec(outputDir_));
+
+  if (convertFile(filepath)) {
+   // LoggerDemo::write("\n  -- Converted: ");
+    //LoggerDebug::write("\n  -- Converted: ");
+  }
+  else {
+   // LoggerDemo::write("\n  -- Failed:    ");
+   // LoggerDebug::write("\n  -- Failed:    ");
+  }
+
+  std::string filename = Path::getName(filepath);
+ // LoggerDebug::write(filename);
+  //LoggerDemo::write(filename);
+
+  return filename + ".html";
+}</div>
+
+std::vector&ltstd::string&gt CodeConverter::convert(const std::vector&ltstd::string&gt& files)
+<div class="isFunction">{
+  clear();
+  dt_ = DependencyTable(files);
+  return convert();
+}</div>
+
+<div class="comment"> // -----&lt get set output directory &gt----------------------------------------</div>
+const std::string & CodeConverter::outputDir() const
+<div class="isFunction">{
+  return outputDir_;
+}</div>
+
+<div class="comment"> // -----&lt set output directory &gt--------------------------------------------</div>
+void CodeConverter::outputDir(const std::string & dir)
+<div class="isFunction">{
+  outputDir_ = dir;
+}</div>
+
+<div class="comment"> // -----&lt create output directory &gt-----------------------------------------</div>
+<div class="comment">/* returns success of creation. it could fail if dir is sys protected */
+bool CodeConverter::createOutpurDir()
+<div class="isFunction">{
+  if (!Directory::exists(outputDir_)) {
+    //LoggerDebug::write("\n  Creating output directory. Path: " + Path::getFullFileSpec(outputDir_));
+    return Directory::create(outputDir_);
+  }
+  //LoggerDebug::write("\n  Output directory already exists. Proceeding...");
+  return true;
+}</div>
+
+// -----&lt get list of converted files &gt-------------------------------------
+const std::vector&ltstd::string&gt CodeConverter::convertedFiles() const
+<div class="isFunction">{
+  return convertedFiles_;
+}</div>
+
+void CodeConverter::clear()
+<div class="isFunction">{
+  convertedFiles_.clear();
+  dt_.clear();
+}</div>
+
+// -----&lt private - read file and create webpage &gt--------------------------    // modified
+bool CodeConverter::convertFile(std::string file)
+<div class="isFunction">{    
+	isPrePage = true; inMutiComment = false;           cout &lt&lt "\n now converting the file  " ;
+  std::ifstream in(file);
+  if (!in.is_open() || !in.good()) {
+    in.close();
+    return false;
+  }
+  std::string filename = Path::getName(file);
+  std::string outputPath = outputDir_ + filename + ".html";           cout &lt&lt "\n out put path is " &lt&lt outputPath;
+  out_.open(outputPath, std::ofstream::out);
+  if (!out_.is_open() || !out_.good()) {
+    in.close();
+    return false;
+  }  
+  addPreCodeHTML(filename);          // write everything to file 
+  addButton();
+  addDependencyLinks(file);
+  addPreTag();
+  size_t count = 0;
+  getInfoFromAST(file);
+  while (in.good()) {
+	  std::string line;
+    while (std::getline(in, line)) {            //add logic to add html markups and 
+		count++;
+      out_ &lt&lt addmarkup(line,count) &lt&lt std::endl;
+    }
+  }
+  out_ &lt&lt "    &lt/pre&gt" &lt&lt std::endl;
+  addScript();
+  addClosingTags();
+  out_.close();
+  convertedFiles_.push_back(outputPath);
+  return true;
+}</div>
+//add div markup
+<div class="isFunction">string CodeConverter::addmarkup(string line,int count) {
+	while (line.find('&lt') != line.npos)
+		line.replace(line.find('&lt'), 1, "&lt");
+	while (line.find('&gt') != line.npos)
+		line.replace(line.find('&gt'), 1, "&gt");       // replace the  &lt &gt char in line to their escape sequence  &ltendl;
+	if (classdiv.find(count) != classdiv.end())
+		line = "&ltdiv class=\"isClass\"&gt" + line;
+	if (functiondiv.find(count) != functiondiv.end())
+		line = "&ltdiv class=\"isFunction\"&gt" + line;
+	if (endDiv.find(count) != endDiv.end())
+		line = line + "&lt/div&gt";
+	line = addPreComment(line);
+	return line;
+}</div>
+
+//get info from ASTtree
+<div class="isFunction">void CodeConverter::getInfoFromAST(string file) {
+	queue &ltASTNode*&gt q;
+	q.push(dt_.getASTNode(file));
+	while (q.size() &gt 0) {// using the information stored in the ASTtree
+		ASTNode* node = q.front();
+		if (node-&gttype_ == "class") {
+			classdiv.insert(node-&gtstartLineCount_);
+			endDiv.insert(node-&gtendLineCount_);
+		}
+		else if (node-&gttype_ == "function"&&node-&gtstartLineCount_ - node-&gtendLineCount_ &gt 1) {
+			functiondiv.insert(node-&gtstartLineCount_);
+			endDiv.insert(node-&gtendLineCount_);
+		}
+		for (ASTNode* node1 : q.front()-&gtchildren_) {
+			q.push(node1);
+		}
+		q.pop();
+	}
+}</div>
+// add logic to add div to PrePage COmments
+<div class="isFunction">string CodeConverter:: addPreComment(string line) {
+	if (!isPrePage)
+		return line;
+	if (inMutiComment) {
+		if (line.find("*/") == line.npos)</div>
+			return line;
+		else {
+			inMutiComment = false;
+			return line + "&lt/div&gt";
+		}
+	}
+
+	if (line.length() &lt 2) {
+		return line;
+		isPrePage = false;
+	}
+	if (line[0] != '/') {
+		return line;
+		isPrePage = false;
+	}
+
+	if(line[1]=='/')
+		return "&ltdiv class=\"comment\"&gt "+line+"&lt/div&gt";
+	if (line[1] == '*') {
+		inMutiComment = true;
+		return "&ltdiv class=\"comment\"&gt" + line ;
+	}
+	return line;
+	 
+}</div>
+
+<div class="comment"> // -----&lt private - add generic HTML preliminary markup &gt-------------------</div>
+void CodeConverter::addPreCodeHTML(const std::string& title)
+<div class="isFunction">{
+  out_ &lt&lt "&ltDOCTYPE !HTML&gt" &lt&lt std::endl;
+  out_ &lt&lt "&lthtml&gt" &lt&lt std::endl;
+  out_ &lt&lt "  &lthead&gt" &lt&lt std::endl;
+  out_ &lt&lt "    &ltTitle&gt" &lt&lt title &lt&lt "&lt/Title&gt" &lt&lt std::endl;
+  out_ &lt&lt "    &ltstyle&gt" &lt&lt std::endl;
+  out_ &lt&lt "      body {" &lt&lt std::endl;
+  out_ &lt&lt "        padding:15px 40px;" &lt&lt std::endl;
+  out_ &lt&lt "        font-family: Consolas;" &lt&lt std::endl;
+  out_ &lt&lt "        font-size: 1.25em;" &lt&lt std::endl;
+  out_ &lt&lt "        font-weight: normal;" &lt&lt std::endl;
+  out_ &lt&lt "      }" &lt&lt std::endl;
+  out_ &lt&lt "      &lt/style&gt" &lt&lt std::endl;
+  out_ &lt&lt "  &lt/head&gt" &lt&lt std::endl &lt&lt std::endl;
+  out_ &lt&lt "  &ltbody&gt" &lt&lt std::endl;
+}</div>
+
+<div class="comment"> // private addbutton</div>
+<div class="isFunction">void CodeConverter::addButton() {
+	out_ &lt&lt "&ltbutton onclick = \"toggle('comment')\"&gt hide / show PreComments &lt/button&gt" &lt&lt std::endl;
+	out_ &lt&lt "&ltbutton onclick = \"toggle('isFunction')\"&gt hide / show functions &lt/button&gt" &lt&lt std::endl;
+	out_ &lt&lt "&ltbutton onclick = \"toggle('isClass')\"&gt hide / show class &lt/button&gt" &lt&lt std::endl;
+
+}</div>
+<div class="isFunction">void CodeConverter::addScript() {
+	out_ &lt&lt "&ltscript&gt" &lt&lt std::endl;
+	out_ &lt&lt "function toggle(type) {" &lt&lt std::endl;
+	out_ &lt&lt "var ele = document.getElementsByClassName(type);" &lt&lt std::endl;
+
+	out_ &lt&lt "for (i = 0;i &lt ele.length;i++) {" &lt&lt std::endl;
+	out_ &lt&lt "var status = ele[i].style.display;" &lt&lt std::endl;
+	out_ &lt&lt "if (status != 'none' || status == '')" &lt&lt std::endl;
+	out_ &lt&lt "ele[i].style.display = 'none';" &lt&lt std::endl;
+	out_ &lt&lt "else" &lt&lt std::endl;
+	out_ &lt&lt "ele[i].style.display = 'block';" &lt&lt std::endl;
+			//alert(ele[i].style.display);
+	out_ &lt&lt "}" &lt&lt std::endl;
+	out_ &lt&lt "}" &lt&lt std::endl;
+	out_ &lt&lt "&lt/script&gt" &lt&lt std::endl;
+}</div>
+
+<div class="comment"> // -----&lt private - add pre tag &gt------------------------------------------</div>
+<div class="comment">/* seperated into seperate function to allow for dependencies addition
+*  before the actual code of the file */</div>
+void CodeConverter::addPreTag()
+<div class="isFunction">{
+  out_ &lt&lt "    &ltpre&gt" &lt&lt std::endl;
+}</div>
+
+<div class="comment"> // -----&lt private - add depedency links markup code &gt----------------------</div>
+void CodeConverter::addDependencyLinks(std::string file)
+<div class="isFunction">{
+  std::string filename = Path::getName(file);
+  if (!dt_.has(file)) { // in case of single file conversion
+   // LoggerDebug::write("\n    No entry found in DependencyTable for [" + filename + "]. Skipping dependency links..");
+    return;
+  }
+
+  if (dt_[file].size() == 0) { // in case the file has no dependencies
+   // LoggerDebug::write("\n    No dependencies found for [" + filename + "]. Skipping dependency links..");
+    return;
+  }
+
+  out_ &lt&lt "    &lth3&gtDependencies: " &lt&lt std::endl;
+  for (auto dep : dt_[file]) {
+	  if(dt_.table_.find(Path::getFullFileSpec(dep))!=dt_.table_.end())
+    out_ &lt&lt "      &lta href=\"" &lt&lt Path::getName(dep) &lt&lt ".html\"&gt" &lt&lt Path::getName(dep) &lt&lt "&lt/a&gt" &lt&lt std::endl;
+	  else
+		  out_ &lt&lt " &ltspan&gt" &lt&lt Path::getName(dep) &lt&lt "&lt/span&gt" &lt&lt std::endl;
+
+  }
+  out_ &lt&lt "    &lt/h3&gt";
+}</div>
+
+<div class="comment"> // -----&lt private - add generic HTML markup closing tags &gt-----------------</div>
+void CodeConverter::addClosingTags()
+<div class="isFunction">{
+  //out_ &lt&lt "    &lt/pre&gt" &lt&lt std::endl;
+  out_ &lt&lt "  &lt/body&gt" &lt&lt std::endl;
+  out_ &lt&lt "&lt/html&gt" &lt&lt std::endl;
+}</div>
+
+<div class="comment"> // -----&lt private - replace HTML special chars &gt---------------------------</div>
+<div class="comment">/* note: the function uses while loop to make sure ALL special characters
+*  are replaced instead of just the first encounter. */</div>
+void CodeConverter::skipSpecialChars(std::string & line)
+<div class="isFunction">{
+  size_t pos = line.npos;
+  while((pos = line.find('&lt')) != line.npos) 
+    line.replace(pos, 1, "&lt;");
+
+  while ((pos = line.find('&gt')) != line.npos)
+    line.replace(pos, 1, "&gt;");
+}</div>
+
+<div class="isFunction">vector&ltstd::string&gt CodeConverter::convertFromDir(std::string dir,std::string reg) {
+	Dependency::dependency dep;
+	if (createOutpurDir())
+		cout &lt&lt "\n fail to creat output dir";
+	//	cout &lt&lt "\n !!!!!!number of file is " &lt&lt testFiles-&gtsize();
+	dep.setpath(dir);
+	dep.setregEx(reg);
+	dep.analyzeWithPreset();
+	setDepTable(*dep.getTable());
+     convert();
+	return convertedFiles_;
+}</div>
+
+#ifdef TEST_CONVERTER
+
+<div class="comment"> // -----&lt test stub for converter class &gt-----------------------------------</div>
+<div class="isFunction">int main() {
+  //LoggerDebug::attach(&std::cout);
+  //LoggerDebug::start();
+
+  //LoggerDebug::title("Testing CodeConverter functions");
+
+  //LoggerDebug::stop(); // do not log DependencyTable logs
+  
+  DependencyTable dt;
+  dt.addDependency("Converter.h", "Converter.cpp");
+  dt.addDependency("Converter.cpp", "Converter.h");
+  dt.addDependency("A.h", "A.h");
+  
+  //LoggerDebug::start(); // log from now on
+
+  CodeConverter cc(dt);
+  dt.display();
+  //LoggerDebug::write("\n");
+  cc.outputDir("../convertedFiles"); // will trigger errors which are handled
+  cc.convert();
+
+  //LoggerDebug::stop();
+  return 0;
+}</div>
+
+#endif
+
+#ifdef JieRenTest123
+<div class="isFunction">int main() {
+	//CodeAnalysis::loader::getpath("../TestFiles", testFiles);
+CodeConverter cc;
+cc.convertFromDir("../TestFiles","*");
+
+	/*
+	for (string file : *testFiles) {
+		dep.analyzeFile(file);
+		cout &lt&lt "\ntable size====" &lt&lt table-&gttable_.size();
+		cc.setDepTable(*dep.getTable());
+		cc.convertFile(file);
+	}
+	*/
+
+
+}</div>
+#endif // JieRenTest
+    </pre>
+<script>
+function toggle(type) {
+var ele = document.getElementsByClassName(type);
+for (i = 0;i < ele.length;i++) {
+var status = ele[i].style.display;
+if (status != 'none' || status == '')
+ele[i].style.display = 'none';
+else
+ele[i].style.display = 'block';
+}
+}
+</script>
+  </body>
+</html>

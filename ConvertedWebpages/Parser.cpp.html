@@ -1,0 +1,213 @@
+<DOCTYPE !HTML>
+<html>
+  <head>
+    <Title>Parser.cpp</Title>
+    <style>
+      body {
+        padding:15px 40px;
+        font-family: Consolas;
+        font-size: 1.25em;
+        font-weight: normal;
+      }
+      </style>
+  </head>
+
+  <body>
+<button onclick = "toggle('comment')"> hide / show PreComments </button>
+<button onclick = "toggle('isFunction')"> hide / show functions </button>
+<button onclick = "toggle('isClass')"> hide / show class </button>
+    <h3>Dependencies: 
+ <span> iostream </span>
+ <span> string </span>
+ <span>Utilities.h</span>
+ <span>Toker.h</span>
+ <span>Semi.h</span>
+      <a href="Parser.h.html">Parser.h</a>
+ <span>ActionsAndRules.h</span>
+ <span>ConfigureParser.h</span>
+ <span>FileSystem.h</span>
+ <span> queue </span>
+    </h3>    <pre>
+<div class="comment"> /////////////////////////////////////////////////////////////////////</div>
+<div class="comment"> //  Parser.cpp - Analyzes C++ and C# language constructs           //</div>
+<div class="comment"> //  ver 1.0                                                        //</div>
+<div class="comment"> //  Language:      Visual C++, Visual Studio 2015                  //</div>
+<div class="comment"> //  Platform:      Dell XPS 8920, Windows 10                       //</div>
+<div class="comment"> //  Application:   Prototype for CSE687 - OOD Projects             //</div>
+<div class="comment"> //  Author:        Jim Fawcett, CST 4-187, Syracuse University     //</div>
+<div class="comment"> //                 (315) 443-3948, jfawcett@twcny.rr.com           //</div>
+<div class="comment"> /////////////////////////////////////////////////////////////////////</div>
+
+#include &ltiostream&gt
+#include &ltstring&gt
+#include "../Utilities/Utilities.h"
+#include "../Tokenizer/Toker.h"
+#include "../SemiExpression/Semi.h"
+#include "Parser.h"
+#include "ActionsAndRules.h"
+#include "ConfigureParser.h"
+
+<div class="comment"> //using namespace CodeAnalysis;</div>
+using namespace Lexer;
+using namespace Utilities;
+using Demo = Logging::StaticLogger&lt1&gt;
+
+namespace CodeAnalysis {
+
+  //----&lt register parsing rule &gt--------------------------------
+
+  void Parser::addRule(IRule* pRule)
+<div class="isFunction">  {
+    rules.push_back(pRule);
+  }</div>
+  //----&lt get next ITokenCollection &gt------------------------------
+
+  bool Parser::next()
+<div class="isFunction">  {
+    bool succeeded = pTokColl-&gtget();
+    if (!succeeded)
+    {
+      return false;
+    }
+
+    pTokColl-&gttrim();
+
+    return true;
+  }</div>
+
+  //----&lt parse the Semi by applying all rules to it &gt--------
+
+  bool Parser::parse()
+<div class="isFunction">  {
+    for (size_t i = 0; i &lt rules.size(); ++i)
+    {
+      bool doWhat = rules[i]-&gtdoTest(pTokColl);
+      if (doWhat == IRule::Stop)
+        break;
+    }
+    return true;
+  }</div>
+  //----&lt register action with a rule &gt--------------------------
+
+  void IRule::addAction(IAction *pAction)
+<div class="isFunction">  {
+    actions.push_back(pAction);
+  }</div>
+  //----&lt invoke all actions associated with a rule &gt------------
+
+  void IRule::doActions(const Lexer::ITokenCollection* pTokColl)
+<div class="isFunction">  {
+    if (actions.size() &gt 0)
+      for (size_t i = 0; i &lt actions.size(); ++i)
+        actions[i]-&gtdoAction(pTokColl);
+  }</div>
+
+  //----&lt test stub &gt--------------------------------------------
+}
+
+#ifdef TEST_PARSER123
+
+#include "../FileSystem/FileSystem.h"
+#include &ltqueue&gt
+#include &ltstring&gt
+#define Util StringHelper
+
+using namespace CodeAnalysis;
+
+int main(int argc, char* argv[])
+<div class="isFunction">{
+  Util::Title("Testing Parser Class");
+  putline();
+
+  // Analyzing files, named on the command line
+
+  if(argc &lt 2)
+  {
+    std::cout 
+      &lt&lt "\n  please enter name of file to process on command line\n\n";
+    return 1;
+  }
+
+  std::string fileSpec;
+
+  for(int i=1; i&ltargc; ++i)  // iterate over files
+  {
+    fileSpec = FileSystem::Path::getFullFileSpec(argv[i]);
+    std::string msg = "Processing file" + fileSpec;
+    Util::title(msg);
+
+    ConfigParseForCodeAnal configure;
+    Parser* pParser = configure.Build();
+
+    std::string name;
+
+    try
+    {
+      if(pParser)
+      {
+        name = FileSystem::Path::getName(argv[i]);
+        if(!configure.Attach(fileSpec))
+        {
+          std::cout &lt&lt "\n  could not open file " &lt&lt name &lt&lt std::endl;
+          continue;
+        }
+      }
+      else
+      {
+        std::cout &lt&lt "\n\n  Parser not built\n\n";
+        return 1;
+      }
+
+      // save current package name
+
+      Repository* pRepo = Repository::getInstance();
+      pRepo-&gtpackage() = name;
+
+      // parse the package
+
+      while (pParser-&gtnext())
+      {
+        pParser-&gtparse();
+      }
+      std::cout &lt&lt "\n";
+
+      // final AST operations
+      ASTNode* pGlobalScope = pRepo-&gtgetGlobalScope();
+
+      // walk AST, computing complexity for each node
+      // and record in AST node's element
+
+      //complexityEval(pGlobalScope);
+      
+      // Walk AST, displaying each element, indented
+      // by generation
+
+      TreeWalk(pGlobalScope);
+    }
+    catch(std::exception& ex)
+    {
+      std::cout &lt&lt "\n\n    " &lt&lt ex.what() &lt&lt "\n\n";
+      std::cout &lt&lt "\n  exception caught at line " &lt&lt __LINE__ &lt&lt " ";
+      std::cout &lt&lt "\n  in package \"" &lt&lt name &lt&lt "\"";
+    }
+    std::cout &lt&lt "\n";
+  }
+  std::cout &lt&lt "\n";
+}</div>
+
+#endif
+    </pre>
+<script>
+function toggle(type) {
+var ele = document.getElementsByClassName(type);
+for (i = 0;i < ele.length;i++) {
+var status = ele[i].style.display;
+if (status != 'none' || status == '')
+ele[i].style.display = 'none';
+else
+ele[i].style.display = 'block';
+}
+}
+</script>
+  </body>
+</html>

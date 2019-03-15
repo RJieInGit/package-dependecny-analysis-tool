@@ -1,0 +1,121 @@
+<DOCTYPE !HTML>
+<html>
+  <head>
+    <Title>DependencyTable.h</Title>
+    <style>
+      body {
+        padding:15px 40px;
+        font-family: Consolas;
+        font-size: 1.25em;
+        font-weight: normal;
+      }
+      </style>
+  </head>
+
+  <body>
+<button onclick = "toggle('comment')"> hide / show PreComments </button>
+<button onclick = "toggle('isFunction')"> hide / show functions </button>
+<button onclick = "toggle('isClass')"> hide / show class </button>
+    <h3>Dependencies: 
+ <span> unordered_map </span>
+ <span> string </span>
+ <span> vector </span>
+ <span>AbstrSynTree.h</span>
+    </h3>    <pre>
+#pragma once
+<div class="comment"> ///////////////////////////////////////////////////////////////////////////</div>
+<div class="comment"> // DependencyTable.h : defines dependency table structure                //</div>
+<div class="comment"> // ver 1.0                                                               //</div>
+<div class="comment"> //                                                                       // </div>
+<div class="comment"> // Application   : OOD-S19 Instructor Solution                           //</div>
+<div class="comment"> // Platform      : Visual Studio Community 2017, Windows 10 Pro x64      //</div>
+<div class="comment"> // Author        : Ammar Salman, Syracuse University                     //</div>
+<div class="comment"> //                 313/788-4694, assalman@syr.edu</div>
+<div class="comment"> //                Jie Ren, Syracuse University                              //</div>
+<div class="comment"> //              (315) 289-0047, jren21@syr.edu    //</div>
+<div class="comment"> ///////////////////////////////////////////////////////////////////////////</div>
+<div class="comment">/*
+*  Package Operations:
+* =======================
+*  This package defines DependencyTable class which is used to hold files
+*  relationships after dependency analysis is performed. It is simply a
+*  wrapper around std::unordered_map which uses string key and vector
+*  value. Therefore, every file in the analysis will point to a vector
+*  of all the files it depends upon. 
+*
+*
+*  Required Files:
+* =======================
+*  DependencyTable.h DependencyTable.cpp Logger.h Logger.cpp
+*
+*  Maintainence History:
+* =======================\
+ * 
+  *ver 2.0 add a map that holds more information about files   map&ltfile,vector&ltASTNode*&gt&gt
+*  ver 1.0 - 11 Feb 2019
+*  - first release
+*/</div>
+
+#include &ltunordered_map&gt
+#include &ltstring&gt
+#include &ltvector&gt
+#include"../AbstractSyntaxTree/AbstrSynTree.h"
+
+class DependencyTable
+<div class="isClass">{
+public:
+  using file = std::string;
+  using files = std::vector&ltfile&gt;
+  using dependencies = std::vector&ltfile&gt;
+  using iterator = std::unordered_map&ltfile, dependencies&gt::iterator;
+
+  std::unordered_map&ltfile, dependencies&gt table_;
+  std::unordered_map&ltfile, CodeAnalysis::ASTNode*&gt ASTNodeList;
+  std::string test = "hellow";
+
+  DependencyTable();
+  DependencyTable(const files& list);
+  ~DependencyTable();
+
+  bool has(const std::string& file);
+
+  void addDependency(file filename, file dependency);
+  void removeDependency(file filename, file dependency);
+
+  void addASTNode(file filename, CodeAnalysis::ASTNode*);     // addASTNode in to the map&ltfile,ASTNode*&gt
+
+  void removeEntry(file filename);
+
+  const dependencies& getDependencies(file filename) const;
+  const dependencies& operator[](const file& filename) const;
+  CodeAnalysis::ASTNode* getASTNode(file filename);             // getthe ASTNode
+
+  // these two functions allow 'for' loops in the form of
+  // for(auto entry : dt) {...}
+  iterator begin();
+  iterator end();
+  void clear() { table_.clear(); }
+
+  files getFiles() const;
+
+  void display();
+
+
+  
+};
+</div>
+    </pre>
+<script>
+function toggle(type) {
+var ele = document.getElementsByClassName(type);
+for (i = 0;i < ele.length;i++) {
+var status = ele[i].style.display;
+if (status != 'none' || status == '')
+ele[i].style.display = 'none';
+else
+ele[i].style.display = 'block';
+}
+}
+</script>
+  </body>
+</html>

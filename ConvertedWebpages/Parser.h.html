@@ -1,0 +1,151 @@
+<DOCTYPE !HTML>
+<html>
+  <head>
+    <Title>Parser.h</Title>
+    <style>
+      body {
+        padding:15px 40px;
+        font-family: Consolas;
+        font-size: 1.25em;
+        font-weight: normal;
+      }
+      </style>
+  </head>
+
+  <body>
+<button onclick = "toggle('comment')"> hide / show PreComments </button>
+<button onclick = "toggle('isFunction')"> hide / show functions </button>
+<button onclick = "toggle('isClass')"> hide / show class </button>
+    <h3>Dependencies: 
+ <span> string </span>
+ <span> iostream </span>
+ <span> vector </span>
+ <span>ITokenCollection.h</span>
+    </h3>    <pre>
+#ifndef PARSER_H
+#define PARSER_H
+<div class="comment"> /////////////////////////////////////////////////////////////////////</div>
+<div class="comment"> //  Parser.h - Analyzes C++ and C# language constructs             //</div>
+<div class="comment"> //  ver 1.0                                                        //</div>
+<div class="comment"> //  Language:      Visual C++, Visual Studio 2015                  //</div>
+<div class="comment"> //  Platform:      Dell XPS 8920, Windows 10                       //</div>
+<div class="comment"> //  Application:   Prototype for CSE687 - OOD Projects             //</div>
+<div class="comment"> //  Author:        Jim Fawcett, CST 4-187, Syracuse University     //</div>
+<div class="comment"> //                 (315) 443-3948, jfawcett@twcny.rr.com           //</div>
+<div class="comment"> /////////////////////////////////////////////////////////////////////</div>
+<div class="comment">/*
+  Module Operations: 
+  ==================
+  This module defines a Parser class.  Its instances collect 
+  semi-expressions from one or more files for analysis.  
+  Analysis consists of applying a set of rules to the semi-expression, 
+  and for each rule that matches, invoking a set of one or more actions.
+
+  Build Process:
+  ==============
+  Required files
+    - Parser.h, Parser.cpp, 
+    - ITokenCollection.h, 
+    - Semi.h, Semi.cpp,
+    - toker.h, toker.cpp,
+    - ActionsAndRules.h, ActionsAndRules.cpp,
+    - GrammarHelpers.h, GrammarHelpers.cpp,
+    - AbstrSynTree.h, AbstrSynTree.cpp,
+    - ScopeStack.h, ScopeStack.cpp
+    - ConfigureParser.h, ConfigureParser.cpp,
+    - FileSystem.h, FileSystem.cpp,
+    - Logger.h, Logger.cpp,
+    - Utilities.h, Utilities.cpp
+
+  Maintenance History:
+  ===================
+  ver 1.0 : 11 Feb 2019
+  - first release
+  - This is a modification of the parser used in CodeAnalyzer.
+  - The most important change is replacing its tokenizer with a 
+    State Pattern based design
+
+*/</div>
+
+#include &ltstring&gt
+#include &ltiostream&gt
+#include &ltvector&gt
+#include "../SemiExpression/ITokenCollection.h"
+
+namespace CodeAnalysis
+{
+  ///////////////////////////////////////////////////////////////
+  // abstract base class for parsing actions
+  //   - when a rule succeeds, it invokes any registered action
+
+  class Parser;
+
+  class IBuilder
+<div class="isClass">  {
+  public:
+    virtual ~IBuilder() {}
+    virtual Parser* Build() = 0;
+  };
+</div>
+  ///////////////////////////////////////////////////////////////
+  // abstract base class for parsing actions
+  //   - when a rule succeeds, it invokes any registered action
+
+  class IAction
+<div class="isClass">  {
+  public:
+    virtual ~IAction() {}
+    virtual void doAction(const Lexer::ITokenCollection* pTc) = 0;
+  };
+</div>
+  ///////////////////////////////////////////////////////////////
+  // abstract base class for parser language construct detections
+  //   - rules are registered with the parser for use
+
+  class IRule
+<div class="isClass">  {
+  public:
+    static const bool Continue = true;
+    static const bool Stop = false;
+    virtual ~IRule() {}
+    void addAction(IAction* pAction);
+    void doActions(const Lexer::ITokenCollection* pTc);
+    virtual bool doTest(const Lexer::ITokenCollection* pTc) = 0;
+  protected:
+    std::vector&ltIAction*&gt actions;
+  };
+</div>
+  class Parser
+<div class="isClass">  {
+  public:
+    Parser(Lexer::ITokenCollection* pTokCollection);
+    ~Parser();
+    void addRule(IRule* pRule);
+    bool parse();
+    bool next();
+  private:
+    Lexer::ITokenCollection* pTokColl;
+    std::vector&ltIRule*&gt rules;
+
+  };
+</div>
+  inline Parser::Parser(Lexer::ITokenCollection* pTokCollection) : pTokColl(pTokCollection) {}
+  
+  inline Parser::~Parser() {}
+}
+#endif
+    </pre>
+<script>
+function toggle(type) {
+var ele = document.getElementsByClassName(type);
+for (i = 0;i < ele.length;i++) {
+var status = ele[i].style.display;
+if (status != 'none' || status == '')
+ele[i].style.display = 'none';
+else
+ele[i].style.display = 'block';
+}
+}
+</script>
+  </body>
+</html>

@@ -1,0 +1,105 @@
+<DOCTYPE !HTML>
+<html>
+  <head>
+    <Title>loader.cpp</Title>
+    <style>
+      body {
+        padding:15px 40px;
+        font-family: Consolas;
+        font-size: 1.25em;
+        font-weight: normal;
+      }
+      </style>
+  </head>
+
+  <body>
+<button onclick = "toggle('comment')"> hide / show PreComments </button>
+<button onclick = "toggle('isFunction')"> hide / show functions </button>
+<button onclick = "toggle('isClass')"> hide / show class </button>
+    <h3>Dependencies: 
+      <a href="loader.h.html">loader.h</a>
+ <span> iostream </span>
+ <span>FileSystem.h</span>
+    </h3>    <pre>
+<div class="comment"> //////////////////////////////////////////////////////////////////////////////////////</div>
+<div class="comment"> // Loader.cpp - a facility to load all the files in the subdirectory                //</div>
+<div class="comment"> // ver 1.0                                                                          //</div>
+<div class="comment"> // -----------------------------------------------------------------------          //</div>
+<div class="comment"> // copyright ?Jie Ren, 2019                                                         //</div>
+<div class="comment"> // All rights granted provided that this notice is retained                         //</div>
+<div class="comment"> // -----------------------------------------------------------------------          //</div>
+<div class="comment"> // Language:    Visual C++, Visual Studio 2017                             //</div>
+<div class="comment"> // Platform:    Windows 10                                                   //</div>
+<div class="comment"> // Application: CSE 687 OOD spring2019, project 1                          //</div>
+<div class="comment"> // Author:      Jie Ren , Syracuse University                              //</div>
+<div class="comment"> //              (315) 289-0047, jren21@syr.edu                              //</div>
+<div class="comment"> /////////////////////////////////////////////////////////////////////////////</div>
+
+#include"loader.h"
+#include&ltiostream&gt
+#include"../FileSystem/FileSystem.h"
+
+using namespace CodeAnalysis;
+using namespace std;
+using namespace FileSystem;
+
+std::string loader::regEx = "*";
+<div class="isFunction">void loader:: getpath(string rootdir, vector&ltstring&gt* files ) {
+	if (rootdir.length() &gt 120) {
+		cout &lt&lt "path not valid, please check input";
+		return;
+	}
+	string path = Path::getFullFileSpec(rootdir);
+	cout &lt&lt path &lt&lt endl;
+	Directory::setCurrentDirectory(path);
+	vector&ltstring&gt currfiles = Directory::getFiles(path,regEx);
+	for (auto file : currfiles) {
+		files-&gtpush_back(Path::getFullFileSpec(Path::fileSpec(path, file)));
+	}
+	vector&ltstring&gt currdir = Directory::getDirectories();
+	string currpath = Path::getFullFileSpec(path);
+	for (string dir : currdir) {
+		if (dir == "" || dir == "." || dir == "..")
+			continue;
+		path = Path::getFullFileSpec(currpath + "/" + dir);
+		//cout &lt&lt path &lt&lt endl;
+		getpath(path,files);
+	}
+
+	return;
+}</div>
+
+<div class="isFunction">void loader::setregEx(const string reg) {
+	regEx = reg;
+	return;
+}</div>
+
+#if TestLoader
+
+<div class="isFunction">int main() {
+	vector&ltstring&gt* filespath = new vector&ltstring&gt();
+	loader::setregEx("*.cpp");
+	loader::getpath("../", filespath);
+	cout &lt&lt filespath-&gtsize();
+	for (string path : *filespath) {
+		cout &lt&lt path &lt&lt endl;
+	}
+	int i;
+	cin &gt&gti;
+}</div>
+#endif
+    </pre>
+<script>
+function toggle(type) {
+var ele = document.getElementsByClassName(type);
+for (i = 0;i < ele.length;i++) {
+var status = ele[i].style.display;
+if (status != 'none' || status == '')
+ele[i].style.display = 'none';
+else
+ele[i].style.display = 'block';
+}
+}
+</script>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+
+                                      CodeAnalysis - Version 1.8
+    ==============================================================================================
+     Tue Mar 12 00:43:04 2019
+     Path: "F:\course\cse687\pj2\dependencyPublisher\Converter"
+     Args: Converter.cpp, /v, /m, /r, /f, /p
+                                                                               
+           Code Metrics - Start Line, Size (lines/code), and Complexity (number of scopes)
+    ==============================================================================================
+
+                 file name        type                               name    line    size    cplx
+    -----------------------  ----------  ---------------------------------  ------  ------  ------
+                             namespace                   Global Namespace       1       1      50
+
+                 file name        type                               name    line    size    cplx
+    -----------------------  ----------  ---------------------------------  ------  ------  ------
+             Converter.cpp    function                      CodeConverter      26       2       1
+             Converter.cpp    function                      CodeConverter      31       3       1
+             Converter.cpp    function                        setDepTable      37       3       1
+             Converter.cpp    function                            convert      43      31       5
+             Converter.cpp    function                            convert      77      28       4
+             Converter.cpp    function                            convert     107       5       1
+             Converter.cpp    function                          outputDir     115       3       1
+             Converter.cpp    function                          outputDir     121       3       1
+             Converter.cpp    function                    createOutpurDir     128       8       2
+             Converter.cpp    function                     convertedFiles     139       3       1
+             Converter.cpp    function                              clear     144       4       1
+             Converter.cpp    function                        convertFile     150      35       5
+             Converter.cpp    function                          addmarkup     186      14       1
+             Converter.cpp    function                     getInfoFromAST     202      19       5
+             Converter.cpp    function                      addPreComment     222      30       6
+             Converter.cpp    function                     addPreCodeHTML     255      16       1
+             Converter.cpp    function                          addButton     273       6       1
+             Converter.cpp    function                          addScript     279      16       1
+             Converter.cpp    function                          addPreTag     300       3       1
+             Converter.cpp    function                 addDependencyLinks     306      22       4
+             Converter.cpp    function                     addClosingTags     331       5       1
+             Converter.cpp    function                   skipSpecialChars     341       8       1
+             Converter.cpp    function                     convertFromDir     350      12       1
+             Converter.cpp    function                               main     366      24       1
+             Converter.cpp    function                               main     394      16       1
+
+                          Functions Exceeding Metric Limits and Public Data
+    ==============================================================================================
+                 file name        type                               name    line    size    cplx
+    -----------------------  ----------  ---------------------------------  ------  ------  ------
+
+
+
+    searched     5 dirs
+   processed     1 files

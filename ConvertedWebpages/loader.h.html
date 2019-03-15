@@ -1,0 +1,84 @@
+<DOCTYPE !HTML>
+<html>
+  <head>
+    <Title>loader.h</Title>
+    <style>
+      body {
+        padding:15px 40px;
+        font-family: Consolas;
+        font-size: 1.25em;
+        font-weight: normal;
+      }
+      </style>
+  </head>
+
+  <body>
+<button onclick = "toggle('comment')"> hide / show PreComments </button>
+<button onclick = "toggle('isFunction')"> hide / show functions </button>
+<button onclick = "toggle('isClass')"> hide / show class </button>
+    <h3>Dependencies: 
+ <span> vector </span>
+ <span> string </span>
+    </h3>    <pre>
+#pragma once
+
+<div class="comment"> //////////////////////////////////////////////////////////////////////////////////////</div>
+<div class="comment"> // Loader.h - a facility to load all the files in the subdirectory                //</div>
+<div class="comment"> // ver 1.0                                                                          //</div>
+<div class="comment"> // -----------------------------------------------------------------------          //</div>
+<div class="comment"> // copyright ?Jie Ren, 2019                                                         //</div>
+<div class="comment"> // All rights granted provided that this notice is retained                         //</div>
+<div class="comment"> // -----------------------------------------------------------------------          //</div>
+<div class="comment"> // Language:    Visual C++, Visual Studio 2017                             //</div>
+<div class="comment"> // Platform:    Windows 10                                                   //</div>
+<div class="comment"> // Application: CSE 687 OOD spring2019, project 1                          //</div>
+<div class="comment"> // Author:      Jie Ren , Syracuse University                              //</div>
+<div class="comment"> //              (315) 289-0047, jren21@syr.edu                              //</div>
+<div class="comment"> /////////////////////////////////////////////////////////////////////////////</div>
+<div class="comment">/*
+ * Module Operations:
+ * ==================
+ *this Class is uese to load all the files in the subdirectories 
+
+ Pulibic InterFace:
+ vector&ltstring&gt paths=loader:: getpath(string rootdir);
+ Maintenance History:
+ 3/4/2019 version 1.0 first release
+
+ */</div>
+#include &ltvector&gt
+#include&ltstring&gt
+
+namespace CodeAnalysis {
+	using paths = std::string;
+<div class="isClass">	 class loader {
+	 private:
+		 
+	 public:
+		 static void getpath(std::string, std::vector&ltpaths&gt*);
+		 static void setregEx(const std::string reg);
+		 static std::string regEx;
+		 loader() {}
+		  ~loader()
+<div class="isFunction">		  {
+
+		  }</div>
+
+
+	 };
+}</div>
+    </pre>
+<script>
+function toggle(type) {
+var ele = document.getElementsByClassName(type);
+for (i = 0;i < ele.length;i++) {
+var status = ele[i].style.display;
+if (status != 'none' || status == '')
+ele[i].style.display = 'none';
+else
+ele[i].style.display = 'block';
+}
+}
+</script>
+  </body>
+</html>
